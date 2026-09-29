@@ -1,0 +1,76 @@
+import os
+import requests
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass 
+
+API_KEY = os.environ.get("NASA_API_KEY")
+
+
+response = requests.get(
+    f"https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key={API_KEY}"
+)
+data = response.json()
+
+print (data[0]['hdurl'])
+
+import sys
+
+import pygame
+
+
+def main():
+    # Load image.png from the same directory as this script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(base_dir, "/home/benf/Python/api Practice/Shrimp_Pawel_2048.jpg")
+
+    pygame.init()
+
+    try:
+        # Create a temporary display so convert_alpha() works
+        pygame.display.set_mode((1, 1))
+        image = pygame.image.load(image_path).convert_alpha()
+    except (pygame.error, FileNotFoundError) as e:
+        print(f"Could not load {image_path}: {e}")
+        pygame.quit()
+        sys.exit(1)
+
+    # Size the window to the image, but cap it to the screen size
+    info = pygame.display.Info()
+    max_w, max_h = int(1000), int(1000)
+    img_w, img_h = image.get_size()
+
+    if img_w > max_w or img_h > max_h:
+        scale = min(max_w / img_w, max_h / img_h)
+        image = pygame.transform.smoothscale(
+            image, (int(img_w * scale), int(img_h * scale))
+        )
+        img_w, img_h = image.get_size()
+
+    screen = pygame.display.set_mode((img_w, img_h))
+    pygame.display.set_caption("/home/benf/Python/api Practice/Shrimp_Pawel_2048.jpg")
+
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+
+        screen.fill((30, 30, 30))
+        screen.blit(image, (0, 0))
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
